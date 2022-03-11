@@ -153,7 +153,6 @@ function addEntity(entity, data) {
     //XXX: Send a XHTML Request that updates the entity you just  modified!
     let url = `http://${host}/entity/${entity}`;
     sendJSONXMLHTTPRequest(url, data, (response) => {
-        world = response;
         drawNextFrame();
     });
 
