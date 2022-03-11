@@ -40,16 +40,23 @@ function sendJSONXMLHTTPRequest(url, objects, callback) {
                 if (xhr.status==200) {
                     //XXX: parse some JSON from the request!
                     //XXX: Pass the data to the callback!
+                    let json = JSON.parse(xhr.response);
+                    callback(json)
                 }
             } 
             catch(e) {
                 alert('Error: ' + e.name);
+
             }
         }
     };
     //XXX: POST to a URL
     //XXX: set the mimetype and the accept headers!
     // Remember to use application/json !
+    url.endsWith('/world') ? xhr.open("GET", url, true) : xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.setRequestHeader("Accept", "application/json");
+    xhr.send(JSON.stringify(objects));
 }
 
 
@@ -62,7 +69,7 @@ function drawCircle(context,entity) {
         lineWidth = 20;
         var gradient = createLinearGradient(20, 0, 0, canvas.height);
         gradient.addColorStop(0, 'green');
-        gradient.addColorStop(.25, 'white');
+        gradient.addColorStop(.25, 'blue');
         gradient.addColorStop(.5, 'pink');
         gradient.addColorStop(.75, 'red');
         var x = entity["x"];
@@ -144,6 +151,11 @@ function addEntity(entity, data) {
     world[entity] = data;
     drawNextFrame(); // (but should we?)
     //XXX: Send a XHTML Request that updates the entity you just  modified!
+    let url = `http://${host}/entity/${entity}`;
+    sendJSONXMLHTTPRequest(url, data, (response) => {
+        world = response;
+        drawNextFrame();
+    });
 
 }
 
@@ -264,7 +276,7 @@ mouse.mouseuppers.push(function(x,y,clicked,e) {
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
     addEntityWithoutName({'x':x,'y':y,'colour':'#11c1ed',
-                        'radius':1});
+                        'radius':3});
 });
 
 
